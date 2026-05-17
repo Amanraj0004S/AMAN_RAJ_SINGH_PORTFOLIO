@@ -1,5 +1,5 @@
 {
-  "rewrites": [
-    { "source": "/", "destination": "/aman_raj_singh_portfolio.html" }
+  "routes": [
+    { "src": "/", "dest": "/aman_raj_singh_portfolio.html" }
   ]
 }
