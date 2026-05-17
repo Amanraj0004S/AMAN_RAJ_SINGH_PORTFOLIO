@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oolka — Case Study · Aman Raj Singh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Cinzel:wght@400;500;600&family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sand:#F5F1E8; --sand-dark:#EDE8DB; --sand-deeper:#E6E0D0;
+  --charcoal:#1A1A1A; --stone:#5A5550; --stone-light:#8C8680;
+  --gold:#A8863C; --gold-mid:#B8964A; --gold-vivid:#C49A40;
+  --gold-bg:rgba(168,134,60,0.09); --gold-border:rgba(168,134,60,0.35);
+  --border:#C8C2B5; --border-dark:#AEA89E;
+  --deep:#0F0F0F; --deep-2:#161410;
+  --red:#8B3A3A; --green:#3A6B4A;
+  --red-bg:rgba(139,58,58,0.07); --green-bg:rgba(58,107,74,0.07);
+  --red-border:rgba(139,58,58,0.3); --green-border:rgba(58,107,74,0.3);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--sand);color:var(--charcoal);font-family:'EB Garamond',serif;font-size:18px;line-height:1.8;overflow-x:hidden;cursor:none;}
+
+/* CURSOR */
+#cursor{position:fixed;pointer-events:none;z-index:99999;top:0;left:0;opacity:0;transition:opacity .3s;}
+#cursor.active{opacity:1;}
+.cur-svg{width:32px;height:32px;transform:translate(-50%,-50%);transition:transform .2s ease,filter .2s ease;will-change:transform;filter:drop-shadow(0 0 3px rgba(168,134,60,.25));}
+#cursor-trail{position:fixed;pointer-events:none;z-index:99998;width:5px;height:5px;border-radius:50%;background:var(--gold-vivid);opacity:.3;transform:translate(-50%,-50%);top:0;left:0;transition:left .35s ease,top .35s ease;}
+
+/* PROGRESS BAR */
+#progress{position:fixed;top:0;left:0;height:2px;background:var(--gold-vivid);z-index:300;transition:width .1s linear;width:0%;}
+
+/* BACK NAV */
+#back-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(245,241,232,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:14px 60px;display:flex;align-items:center;justify-content:space-between;}
+.back-link{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);text-decoration:none;display:flex;align-items:center;gap:10px;transition:color .3s;}
+.back-link:hover{color:var(--gold);}
+.back-arrow{font-size:14px;color:var(--gold-vivid);}
+.back-title{font-family:'Cinzel',serif;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--charcoal);}
+.nav-links-cs{display:flex;gap:0;list-style:none;border:1px solid var(--border);}
+.nav-links-cs li a{display:block;font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);text-decoration:none;padding:8px 14px;border-right:1px solid var(--border);transition:background .25s,color .25s;}
+.nav-links-cs li:last-child a{border-right:none;}
+.nav-links-cs li a:hover{background:var(--sand-dark);color:var(--gold);}
+.connect-btn{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--sand);background:var(--charcoal);padding:9px 22px;text-decoration:none;border:1px solid var(--charcoal);transition:all .3s;}
+.connect-btn:hover{background:var(--gold-vivid);border-color:var(--gold-vivid);color:var(--deep);}
+
+/* HERO */
+.cs-hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:100px 80px 80px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.cs-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent 10%,var(--gold-vivid) 50%,transparent 90%);}
+.hero-bg-num{position:absolute;top:50%;right:-40px;transform:translateY(-50%);font-family:'Cormorant Garamond',serif;font-size:clamp(200px,28vw,380px);font-weight:300;color:transparent;-webkit-text-stroke:1px rgba(168,134,60,0.06);line-height:1;user-select:none;pointer-events:none;}
+.cs-tag-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;}
+.cs-tag{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-vivid);padding:5px 14px;border:1px solid var(--gold-border);}
+.cs-num{font-family:'Cinzel',serif;font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--stone-light);margin-bottom:16px;display:block;}
+.cs-hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(48px,8vw,96px);font-weight:300;line-height:1.0;letter-spacing:-1px;color:var(--charcoal);margin-bottom:24px;}
+.cs-hero-title em{font-style:italic;color:var(--stone);}
+.cs-hero-sub{font-family:'Spectral',serif;font-size:15px;color:var(--stone);max-width:580px;line-height:1.9;margin-bottom:44px;}
+.cs-meta-row{display:flex;gap:0;border-top:1px solid var(--border);border-left:1px solid var(--border);}
+.cs-meta-cell{padding:18px 28px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.cs-meta-lbl{font-family:'Cinzel',serif;font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--stone-light);display:block;margin-bottom:4px;}
+.cs-meta-val{font-family:'Spectral',serif;font-size:14px;color:var(--charcoal);}
+
+/* BODY */
+.cs-body{max-width:860px;margin:0 auto;padding:80px 60px 0;}
+
+/* SECTION */
+.cs-section{margin-bottom:90px;}
+.cs-section-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:6px;text-transform:uppercase;color:var(--gold-vivid);display:block;margin-bottom:32px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.cs-h2{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,4vw,46px);font-weight:300;line-height:1.25;color:var(--charcoal);margin-bottom:26px;}
+.cs-h2 em{font-style:italic;color:var(--stone);}
+.cs-p{font-size:15px;color:var(--stone);line-height:1.95;margin-bottom:16px;}
+.cs-p strong{color:var(--charcoal);font-weight:500;}
+.stone-rule{width:100%;height:1px;background:linear-gradient(90deg,var(--gold-vivid),transparent);opacity:.35;margin:56px 0;}
+
+/* CALLOUT */
+.cs-callout{padding:26px 32px;border-left:2px solid var(--gold-vivid);background:var(--gold-bg);margin:28px 0;}
+.cs-callout .c-lbl{font-family:'Cinzel',serif;font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-vivid);display:block;margin-bottom:8px;}
+.cs-callout p{font-family:'Spectral',serif;font-size:15px;font-style:italic;color:var(--charcoal);line-height:1.8;}
+
+/* TRANSPARENCY NOTE */
+.transparency{margin:28px 0;padding:18px 22px;border:1px solid var(--border);background:var(--sand-dark);}
+.transparency p{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:1px;color:var(--stone-light);line-height:1.8;}
+.transparency strong{color:var(--charcoal);font-weight:500;}
+
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-top:32px;}
+.stat-card{background:var(--sand);padding:34px 30px;position:relative;overflow:hidden;transition:background .3s;}
+.stat-card:hover{background:var(--sand-dark);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold-vivid);transform:scaleX(0);transition:transform .3s ease;transform-origin:left;}
+.stat-card:hover::before{transform:scaleX(1);}
+.stat-number{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:var(--gold-vivid);line-height:1;margin-bottom:8px;}
+.stat-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone-light);}
+.stat-desc{font-size:13px;color:var(--stone-light);margin-top:6px;line-height:1.5;}
+
+/* CLUSTERS */
+.clusters{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-top:44px;}
+.cluster{background:var(--sand);padding:36px 30px;position:relative;overflow:hidden;transition:background .3s;}
+.cluster:hover{background:var(--sand-dark);}
+.cluster-bar{position:absolute;top:0;left:0;right:0;height:2px;}
+.cluster-bar.red-b{background:var(--red);}
+.cluster-bar.purple-b{background:#7B6EAF;}
+.cluster-bar.amber-b{background:var(--gold-vivid);}
+.cluster-bar.green-b{background:var(--green);}
+.cluster-number{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;line-height:1;margin-bottom:4px;}
+.cluster-number.red-t{color:var(--red);}
+.cluster-number.purple-t{color:#7B6EAF;}
+.cluster-number.amber-t{color:var(--gold-vivid);}
+.cluster-number.green-t{color:var(--green);}
+.cluster-denom{font-family:'Spectral',serif;font-size:16px;color:var(--stone-light);}
+.cluster-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--charcoal);margin:14px 0 8px;}
+.cluster-pattern{font-size:13px;color:var(--stone);line-height:1.7;margin-bottom:18px;}
+.cluster-quote{font-size:13px;color:var(--stone-light);font-style:italic;padding:14px 18px;border-left:2px solid var(--border);line-height:1.7;}
+
+/* CONTRAST GRID */
+.contrast-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-top:44px;}
+.contrast-col{padding:36px 30px;background:var(--sand);}
+.contrast-col.works{border-top:2px solid var(--green);}
+.contrast-col.breaks{border-top:2px solid var(--red);}
+.contrast-heading{font-family:'Cinzel',serif;font-size:8px;letter-spacing:4px;text-transform:uppercase;margin-bottom:22px;}
+.contrast-heading.works{color:var(--green);}
+.contrast-heading.breaks{color:var(--red);}
+.contrast-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;font-size:14px;color:var(--stone);line-height:1.6;}
+.contrast-dot{width:6px;height:6px;border-radius:50%;margin-top:6px;flex-shrink:0;}
+.contrast-dot.works{background:var(--green);}
+.contrast-dot.breaks{background:var(--red);}
+
+/* PROBLEM BLOCK */
+.problem-block{border:1px solid var(--border);border-left:3px solid var(--red);padding:40px 44px;margin-top:40px;background:var(--sand);}
+.problem-block .ps-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--red);display:block;margin-bottom:20px;}
+.problem-block p{font-family:'Cormorant Garamond',serif;font-size:clamp(17px,2.2vw,22px);line-height:1.7;color:var(--charcoal);font-weight:400;}
+.problem-block p+p{margin-top:18px;font-size:15px;font-family:'EB Garamond',serif;color:var(--stone);}
+
+/* 5 WHYS */
+.whys-chain{margin-top:44px;position:relative;padding-left:34px;}
+.whys-chain::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,var(--gold-vivid),var(--red));}
+.why-item{position:relative;margin-bottom:36px;opacity:0;transform:translateX(-16px);transition:all .5s ease;}
+.why-item.visible{opacity:1;transform:translateX(0);}
+.why-item::before{content:'';position:absolute;left:-26px;top:8px;width:8px;height:8px;border-radius:50%;background:var(--gold-vivid);border:2px solid var(--sand);}
+.why-number{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-vivid);margin-bottom:6px;}
+.why-text{font-size:16px;color:var(--charcoal);line-height:1.7;}
+
+.root-cause-box{margin-top:44px;padding:36px 44px;border:1px solid var(--gold-border);border-left:3px solid var(--gold-vivid);background:var(--gold-bg);position:relative;}
+.root-cause-box::before{content:'Root Cause';position:absolute;top:16px;right:20px;font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:4px;text-transform:uppercase;color:var(--gold-border);}
+.root-cause-box blockquote{font-family:'Cormorant Garamond',serif;font-size:clamp(17px,2.3vw,24px);font-style:italic;line-height:1.65;color:var(--gold-vivid);}
+
+/* SOLUTIONS */
+.solution-item{display:grid;grid-template-columns:80px 1fr;gap:44px;padding:52px 0;border-top:1px solid var(--border);}
+.solution-item:last-child{border-bottom:1px solid var(--border);}
+.solution-priority{text-align:center;}
+.priority-number{font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;line-height:1;color:transparent;-webkit-text-stroke:1px var(--gold-vivid);display:block;}
+.priority-label{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:3px;text-transform:uppercase;color:var(--stone-light);}
+.solution-tag{display:inline-block;font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-vivid);border:1px solid var(--gold-border);padding:4px 12px;margin-bottom:14px;}
+.solution-name{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,2.8vw,28px);font-weight:400;color:var(--charcoal);margin-bottom:14px;line-height:1.25;}
+.solution-desc{font-size:15px;color:var(--stone);line-height:1.85;margin-bottom:20px;max-width:600px;}
+.solution-solves{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--stone-light);display:flex;align-items:center;gap:8px;}
+.solution-solves span{color:var(--charcoal);font-family:'Spectral',serif;font-size:13px;letter-spacing:0;text-transform:none;}
+
+/* METRICS */
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-top:44px;}
+.metric-card{background:var(--sand);padding:32px 28px;position:relative;overflow:hidden;transition:background .3s;}
+.metric-card:hover{background:var(--sand-dark);}
+.metric-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(to right,var(--gold-vivid),transparent);}
+.metric-sol{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-vivid);margin-bottom:10px;}
+.metric-name{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--charcoal);margin-bottom:10px;line-height:1.3;}
+.metric-def{font-size:13px;color:var(--stone);line-height:1.65;margin-bottom:14px;}
+.metric-target{font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--green);display:flex;align-items:flex-start;gap:8px;}
+.metric-target::before{content:'→';color:var(--stone-light);flex-shrink:0;}
+
+/* SANCTUM */
+.cs-sanctum{padding:80px 0 100px;text-align:center;border-top:1px solid var(--border);}
+.sanctum-vl{width:1px;height:50px;background:linear-gradient(to bottom,transparent,var(--gold-vivid));margin:0 auto 40px;}
+.sanctum-q{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,3.5vw,38px);font-weight:300;line-height:1.4;max-width:700px;margin:0 auto 18px;color:var(--charcoal);}
+.sanctum-a{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:5px;text-transform:uppercase;color:var(--gold-vivid);}
+.sanctum-vl-b{width:1px;height:50px;background:linear-gradient(to bottom,var(--gold-vivid),transparent);margin:40px auto 0;}
+
+/* AUTHOR SECTION */
+.author-section{background:var(--sand-dark);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:60px 60px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:28px;}
+.author-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--stone-light);margin-bottom:8px;}
+.author-name{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--charcoal);}
+.author-title{font-size:14px;color:var(--stone-light);font-family:'Spectral',serif;font-style:italic;margin-top:4px;}
+.author-right{display:flex;flex-direction:column;align-items:flex-end;gap:14px;}
+.day-badge{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-vivid);border:1px solid var(--gold-border);padding:6px 18px;}
+.author-links{display:flex;gap:0;border:1px solid var(--border);}
+.author-links a{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);text-decoration:none;padding:9px 20px;border-right:1px solid var(--border);transition:all .3s;}
+.author-links a:last-child{border-right:none;}
+.author-links a:hover{color:var(--gold-vivid);background:var(--gold-bg);}
+
+/* BOTTOM CTA */
+.cs-bottom{background:var(--charcoal);padding:80px 60px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:32px;}
+.cta-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:5px;text-transform:uppercase;color:var(--gold-vivid);display:block;margin-bottom:10px;}
+.cta-text{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,3vw,36px);font-weight:300;color:var(--sand);line-height:1.3;}
+.cta-actions{display:flex;gap:0;flex-shrink:0;}
+.cta-btn{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;padding:13px 26px;text-decoration:none;border:1px solid rgba(245,241,232,.2);color:rgba(245,241,232,.5);transition:all .35s;display:block;}
+.cta-btn:hover{border-color:var(--gold-vivid);color:var(--gold-vivid);}
+.cta-btn.primary{background:rgba(245,241,232,.08);color:rgba(245,241,232,.8);border-right:none;}
+.cta-btn.primary:hover{color:var(--gold-vivid);border-color:var(--gold-vivid);}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .8s ease,transform .8s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+@media(max-width:900px){
+  #back-nav{padding:12px 20px;} .nav-links-cs{display:none;}
+  .cs-hero{padding:90px 22px 50px;}
+  .cs-body{padding:50px 22px 0;}
+  .cs-meta-row{flex-direction:column;}
+  .stat-grid,.clusters,.contrast-grid,.metrics-grid{grid-template-columns:1fr;}
+  .solution-item{grid-template-columns:1fr;gap:16px;}
+  .priority-number{font-size:40px;text-align:left;}
+  .author-section,.cs-bottom{flex-direction:column;padding:44px 22px;}
+  .author-right{align-items:flex-start;}
+  .cta-actions{flex-direction:column;width:100%;}
+  .cta-btn.primary{border-right:1px solid rgba(245,241,232,.2);border-bottom:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor">
+  <svg class="cur-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="16" cy="18" rx="3.2" ry="5.5" stroke="#A8863C" stroke-width="0.9" fill="none"/>
+    <ellipse cx="16" cy="18" rx="3.2" ry="5.5" stroke="#A8863C" stroke-width="0.9" fill="none" transform="rotate(45 16 18)"/>
+    <ellipse cx="16" cy="18" rx="3.2" ry="5.5" stroke="#A8863C" stroke-width="0.9" fill="none" transform="rotate(90 16 18)"/>
+    <ellipse cx="16" cy="18" rx="3.2" ry="5.5" stroke="#A8863C" stroke-width="0.9" fill="none" transform="rotate(135 16 18)"/>
+    <circle cx="16" cy="18" r="1.8" fill="#A8863C" opacity="0.75"/>
+    <line x1="16" y1="12" x2="16" y2="8" stroke="#A8863C" stroke-width="0.7" opacity="0.5"/>
+  </svg>
+</div>
+<div id="cursor-trail"></div>
+
+<!-- PROGRESS -->
+<div id="progress"></div>
+
+<!-- BACK NAV -->
+<div id="back-nav">
+  <a href="aman_raj_singh_portfolio.html" class="back-link">
+    <span class="back-arrow">←</span>
+    <span>Back to Portfolio</span>
+  </a>
+  <ul class="nav-links-cs">
+    <li><a href="#evidence">Evidence</a></li>
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#rootcause">Root Cause</a></li>
+    <li><a href="#solutions">Solutions</a></li>
+    <li><a href="#metrics">Metrics</a></li>
+  </ul>
+  <a href="mailto:amanrajsingh070304@gmail.com" class="connect-btn">Connect</a>
+</div>
+
+<!-- HERO -->
+<div class="cs-hero">
+  <div class="hero-bg-num">03</div>
+  <div class="cs-tag-row">
+    <span class="cs-tag">Product Teardown</span>
+    <span class="cs-tag">Consumer Fintech</span>
+    <span class="cs-tag">AI Product</span>
+    <span class="cs-tag">5 Whys RCA</span>
+    <span class="cs-tag">May 2026</span>
+  </div>
+  <span class="cs-num">Case Study III of III</span>
+  <h1 class="cs-hero-title">Oolka —<br><em>The AI that</em><br>waits.</h1>
+  <p class="cs-hero-sub">Oolka raised ₹130Cr and built an AI agent for consumer credit improvement in India. 6 million users. $2.5M ARR. So why are users calling it a paid ChatGPT?</p>
+  <div class="cs-meta-row">
+    <div class="cs-meta-cell"><span class="cs-meta-lbl">Company</span><span class="cs-meta-val">Oolka · Sixdis Technologies</span></div>
+    <div class="cs-meta-cell"><span class="cs-meta-lbl">Stage</span><span class="cs-meta-val">Series A · Bangalore</span></div>
+    <div class="cs-meta-cell"><span class="cs-meta-lbl">Method</span><span class="cs-meta-val">100 Play Store reviews · 5 Whys RCA</span></div>
+    <div class="cs-meta-cell"><span class="cs-meta-lbl">Analyst</span><span class="cs-meta-val">Aman Raj Singh</span></div>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <!-- 01 COMPANY CONTEXT -->
+  <div class="cs-section reveal" id="company">
+    <span class="cs-section-lbl">01 · Company Context</span>
+    <h2 class="cs-h2">The bet<br><em>Oolka made.</em></h2>
+    <p class="cs-p">Oolka is building what no one else is attempting at scale in India — an AI agent that doesn't just show you your credit score, but actively works to improve it. Their acquisition wedge is smart: offer a free credit score check, catch users at peak financial anxiety, convert that moment into an app download. The differentiated promise over CIBIL, Paisabazaar, and CRED is clear. Those platforms stop at the number. Oolka promises to change it.</p>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-number">₹130Cr</div>
+        <div class="stat-label">Series A Raised</div>
+        <div class="stat-desc">Sixdis Technologies · Bangalore</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">6M</div>
+        <div class="stat-label">Registered Users</div>
+        <div class="stat-desc">Acquisition wedge: free credit score check</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">$2.5M</div>
+        <div class="stat-label">Annual Recurring Revenue</div>
+        <div class="stat-desc">Subscription-led monetisation model</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">1</div>
+        <div class="stat-label">Core Promise</div>
+        <div class="stat-desc">AI that doesn't just show your score — improves it</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stone-rule"></div>
+
+  <!-- 02 USER EVIDENCE -->
+  <div class="cs-section reveal" id="evidence">
+    <span class="cs-section-lbl">02 · User Evidence</span>
+    <h2 class="cs-h2">100 reviews.<br><em>4 patterns.</em></h2>
+    <p class="cs-p">I analysed <strong>100 recent Play Store reviews</strong> (May 6–10, 2026). <strong>12 were 1–2 star.</strong> But those 12 said the same things repeatedly. I then pulled my full negative review sample — 20 users across 1 and 2 star ratings — and clustered every complaint. Four patterns emerged with striking consistency.</p>
+
+    <div class="transparency">
+      <p><strong>Transparency note:</strong> The cluster counts (out of 20) are from the full negative review sample collected across 1 and 2 star ratings. The 12/100 figure is from the most recent 100 reviews only (May 6–10, 2026). Both sets are from Google Play Store exclusively.</p>
+    </div>
+
+    <div class="clusters">
+      <div class="cluster">
+        <div class="cluster-bar purple-b"></div>
+        <div class="cluster-number purple-t">8<span class="cluster-denom">/20</span></div>
+        <div class="cluster-title">AI Reliability</div>
+        <div class="cluster-pattern">Users say the AI is generic, incomplete, and no better than a free LLM. It fails to deliver on the core product promise of personalised credit guidance.</div>
+        <div class="cluster-quote">"You can download your credit report and use free AI tools like Claude — however, in my experience, the AI does not seem mature or reliable. Instead of offering practical guidance, it mostly functions like a basic AI tool that generates generic information and simple email drafts."</div>
+      </div>
+      <div class="cluster">
+        <div class="cluster-bar red-b"></div>
+        <div class="cluster-number red-t">7<span class="cluster-denom">/20</span></div>
+        <div class="cluster-title">Trust &amp; Accuracy</div>
+        <div class="cluster-pattern">Users report score mismatches between Oolka, CIBIL, and Paytm. Wrong numbers in a high-stakes financial context destroy trust immediately.</div>
+        <div class="cluster-quote">"My CIBIL score is 718 but this app is showing less than 600 and telling me to take their subscription for increasing my score."</div>
+      </div>
+      <div class="cluster">
+        <div class="cluster-bar amber-b"></div>
+        <div class="cluster-number amber-t">7<span class="cluster-denom">/20</span></div>
+        <div class="cluster-title">Monetisation Friction</div>
+        <div class="cluster-pattern">Paywall appears before users experience any value. The product asks for money before demonstrating what money buys — a classic activation failure.</div>
+        <div class="cluster-quote">"You can also take membership by paying Rs.99 and after that there will be zero in the name of service. These people get all the work done through chatbots — how can I get the change in CIBIL?"</div>
+      </div>
+      <div class="cluster">
+        <div class="cluster-bar green-b"></div>
+        <div class="cluster-number green-t">5<span class="cluster-denom">/20</span></div>
+        <div class="cluster-title">Data &amp; Reporting Gap</div>
+        <div class="cluster-pattern">Oolka works only on Experian data but advertises CIBIL improvement. Most Indian banks use CIBIL for loan approvals. This is a promise-delivery mismatch baked into the product.</div>
+        <div class="cluster-quote">"It only shows an Experian report, which is useful, but doesn't include CIBIL — the most important score used by banks in India. Most banks in India rely mainly on the CIBIL report for loan approvals."</div>
+      </div>
+    </div>
+
+    <div class="contrast-grid">
+      <div class="contrast-col works">
+        <div class="contrast-heading works">What works</div>
+        <div class="contrast-item"><div class="contrast-dot works"></div>Loan closure identification — users find and close useless loans</div>
+        <div class="contrast-item"><div class="contrast-dot works"></div>Credit card closure process — smooth, fast, appreciated</div>
+        <div class="contrast-item"><div class="contrast-dot works"></div>Identifying instruments dragging the score down</div>
+      </div>
+      <div class="contrast-col breaks">
+        <div class="contrast-heading breaks">What doesn't</div>
+        <div class="contrast-item"><div class="contrast-dot breaks"></div>Long-term credit improvement — no structured plan</div>
+        <div class="contrast-item"><div class="contrast-dot breaks"></div>Personalised AI guidance — feels generic and reactive</div>
+        <div class="contrast-item"><div class="contrast-dot breaks"></div>Trust at onboarding — score mismatch kills confidence early</div>
+        <div class="contrast-item"><div class="contrast-dot breaks"></div>Value before money — paywall appears before proof of concept</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stone-rule"></div>
+
+  <!-- 03 PROBLEM STATEMENT -->
+  <div class="cs-section reveal" id="problem">
+    <span class="cs-section-lbl">03 · Problem Statement</span>
+    <h2 class="cs-h2">One sentence<br><em>that explains</em><br>the churn.</h2>
+    <div class="problem-block">
+      <span class="ps-label">Synthesised Problem Statement</span>
+      <p>A user with a low credit score comes to Oolka wanting a personalised credit improvement plan — they get asked for payment before receiving vague AI responses with no clear roadmap and no structured execution, just a paid ChatGPT.</p>
+      <p>This costs Oolka user trust and fast dissatisfaction, leading to negative word of mouth and the loss of long-term recurring revenue — the very foundation their ARR depends on.</p>
+    </div>
+  </div>
+
+  <div class="stone-rule"></div>
+
+  <!-- 04 ROOT CAUSE -->
+  <div class="cs-section" id="rootcause">
+    <span class="cs-section-lbl reveal">04 · Root Cause · 5 Whys</span>
+    <h2 class="cs-h2 reveal">Asking why<br><em>five times.</em></h2>
+
+    <div class="whys-chain">
+      <div class="why-item">
+        <div class="why-number">Why 1</div>
+        <div class="why-text">Users are churning before seeing value from the product.</div>
+      </div>
+      <div class="why-item">
+        <div class="why-number">Why 2</div>
+        <div class="why-text">Because they hit a paywall before the free version shows them anything meaningful — all utility is gated behind payment.</div>
+      </div>
+      <div class="why-item">
+        <div class="why-number">Why 3</div>
+        <div class="why-text">But even the premium version doesn't deliver a structured, personalised improvement plan — it delivers generic responses.</div>
+      </div>
+      <div class="why-item">
+        <div class="why-number">Why 4</div>
+        <div class="why-text">Because the AI only handles simple tasks — basic email drafts, instrument closures — not complex strategies like loan planning, spending behaviour analysis, or score trajectory forecasting.</div>
+      </div>
+      <div class="why-item">
+        <div class="why-number">Why 5</div>
+        <div class="why-text">Because the AI is reactive, not proactive. It waits for what the user types instead of cross-questioning the user, analysing the full credit profile holistically, and generating a forward-looking personalised roadmap on its own.</div>
+      </div>
+    </div>
+
+    <div class="root-cause-box reveal">
+      <blockquote>"Oolka's AI is a reactive chatbot, not an intelligent credit advisor. It processes what users type — not what users need."</blockquote>
+    </div>
+  </div>
+
+  <div class="stone-rule"></div>
+
+  <!-- 05 SOLUTIONS -->
+  <div class="cs-section reveal" id="solutions">
+    <span class="cs-section-lbl">05 · Solution Framework</span>
+    <h2 class="cs-h2">Four interventions,<br><em>one direction.</em></h2>
+
+    <div class="solution-item">
+      <div class="solution-priority">
+        <span class="priority-number">1</span>
+        <span class="priority-label">Priority</span>
+      </div>
+      <div class="solution-content">
+        <div class="solution-tag">Core Product Redesign</div>
+        <div class="solution-name">From Reactive Chatbot to Proactive Credit Advisor</div>
+        <div class="solution-desc">Train the AI on historical credit profile patterns so it stops waiting for user inputs and starts leading. First interaction: user submits structured data — score, active loans, credit card usage, payment history gaps — and the AI generates a personalised 3-week credit improvement plan. It identifies hidden score drains, surfaces quick wins, and updates the plan week on week as behaviour changes. The AI asks questions. It doesn't wait for them.</div>
+        <div class="solution-solves">Solves for: <span>8/20 users — AI feels generic, no better than free tools</span></div>
+      </div>
+    </div>
+
+    <div class="solution-item">
+      <div class="solution-priority">
+        <span class="priority-number">2</span>
+        <span class="priority-label">Priority</span>
+      </div>
+      <div class="solution-content">
+        <div class="solution-tag">Activation Model Redesign</div>
+        <div class="solution-name">Value Before Paywall</div>
+        <div class="solution-desc">The 3-week personalised plan is shown in full before any subscription is asked. The user sees exactly what Oolka found about their credit profile and what it recommends — for free, once. Only after this moment of demonstrated value does the paywall appear, offering monthly or annual plans to unlock automated execution. The logic: if you show someone their own financial blind spots for the first time, paying ₹99 to fix them is an easy decision. Cost to Oolka: more tokens per free user. Benefit: trust before the ask.</div>
+        <div class="solution-solves">Solves for: <span>7/20 users — paywall appeared before a single useful insight</span></div>
+      </div>
+    </div>
+
+    <div class="solution-item">
+      <div class="solution-priority">
+        <span class="priority-number">3</span>
+        <span class="priority-label">Priority</span>
+      </div>
+      <div class="solution-content">
+        <div class="solution-tag">Premium Tier Redesign</div>
+        <div class="solution-name">Automate the Execution Layer</div>
+        <div class="solution-desc">The paid tier stops being about advice and becomes about action. It suggests the best loan closure options ranked by credit score impact, rates the user's credit card spending behaviour against their improvement goals, initiates dispute letters, and completes tasks with user confirmation at key steps. Execution — not information — becomes the USP. The product graduates from telling users what to do to doing it with them.</div>
+        <div class="solution-solves">Solves for: <span>7/20 users — paid and got nothing executed</span></div>
+      </div>
+    </div>
+
+    <div class="solution-item">
+      <div class="solution-priority">
+        <span class="priority-number">4</span>
+        <span class="priority-label">Priority</span>
+      </div>
+      <div class="solution-content">
+        <div class="solution-tag">Quick Win · Zero Engineering</div>
+        <div class="solution-name">Transparency Fix for the Bureau Gap</div>
+        <div class="solution-desc">Oolka cannot fix their Experian-only data contract — that is a business decision, not a product one. But they can stop surprising users with it. One line on the onboarding screen: "Oolka works with Experian data. Your score here may differ from your CIBIL score." That single sentence — zero engineering effort — eliminates the score mismatch complaint before it forms. Transparency is a product decision even when the underlying constraint is not.</div>
+        <div class="solution-solves">Solves for: <span>5/20 users — score mismatch between Oolka, CIBIL, and Paytm</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stone-rule"></div>
+
+  <!-- 06 METRICS -->
+  <div class="cs-section reveal" id="metrics">
+    <span class="cs-section-lbl">06 · Success Metrics</span>
+    <h2 class="cs-h2">How you know<br><em>it's working.</em></h2>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-sol">Solution 1</div>
+        <div class="metric-name">Plan Adherence Rate</div>
+        <div class="metric-def">% of users who complete at least 2 out of 3 weekly actions suggested by the AI plan. Measured at end of Week 3 for each new user cohort.</div>
+        <div class="metric-target">Target: 40%+ adherence by Week 3. If users follow the plan, the AI is personalised enough to feel actionable — not generic.</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-sol">Solution 2</div>
+        <div class="metric-name">Free-to-Paid Conversion Rate</div>
+        <div class="metric-def">% of users who view the full 3-week plan and purchase a subscription within 7 days. Baseline: industry freemium fintech average is 3–5%.</div>
+        <div class="metric-target">Target: 8%+ — the value moment of seeing your own blind spots justifies a premium above market average.</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-sol">Solution 3</div>
+        <div class="metric-name">Execution Feature Retention Rate</div>
+        <div class="metric-def">% of paid users who return to use the execution layer — loan suggestions, spending rating, dispute initiation — at least once per week after Month 1.</div>
+        <div class="metric-target">Target: 60%+ weekly active paid users. Repeat usage and permission grants signal genuine utility, not novelty.</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-sol">Solution 4</div>
+        <div class="metric-name">Bureau Mismatch Complaint Rate</div>
+        <div class="metric-def">% of 1–2 star reviews mentioning score discrepancy between Oolka and CIBIL or Paytm. Current baseline: 5 out of every 20 negative reviewers.</div>
+        <div class="metric-target">Target: drop to under 1/20 within 60 days of adding the transparency line on onboarding.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SANCTUM -->
+  <div class="cs-sanctum reveal">
+    <div class="sanctum-vl"></div>
+    <p class="sanctum-q">"A reactive AI is not a product — it is a mirror with a subscription fee. The moment Oolka starts leading the conversation instead of waiting for it, the churn stops."</p>
+    <span class="sanctum-a">Core Insight — Aman Raj Singh</span>
+    <div class="sanctum-vl-b"></div>
+  </div>
+
+</div><!-- /cs-body -->
+
+<!-- AUTHOR -->
+<div class="author-section reveal">
+  <div>
+    <div class="author-label">Written by</div>
+    <div class="author-name">Aman Raj Singh</div>
+    <div class="author-title">Day 21 · PM Transition · Building in Public</div>
+  </div>
+  <div class="author-right">
+    <div class="day-badge">Day 21 of 31</div>
+    <div class="author-links">
+      <a href="https://www.linkedin.com/in/aman-raj-singh-688039229/" target="_blank">LinkedIn</a>
+      <a href="aman_raj_singh_portfolio.html">Portfolio</a>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM CTA -->
+<div class="cs-bottom">
+  <div>
+    <span class="cta-lbl">Continue the journey</span>
+    <p class="cta-text">Return to portfolio<br>or connect directly.</p>
+  </div>
+  <div class="cta-actions">
+    <a href="aman_raj_singh_portfolio.html" class="cta-btn primary">← Back to Portfolio</a>
+    <a href="mailto:amanrajsingh070304@gmail.com" class="cta-btn">Connect with Aman →</a>
+  </div>
+</div>
+
+<script>
+// Cursor
+const cur=document.getElementById('cursor');
+const trail=document.getElementById('cursor-trail');
+let mx=0,my=0,tx=0,ty=0,moved=false;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  if(!moved){cur.classList.add('active');moved=true;}
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+});
+function loopTrail(){
+  tx+=(mx-tx)*.1;ty+=(my-ty)*.1;
+  trail.style.left=tx+'px';trail.style.top=ty+'px';
+  requestAnimationFrame(loopTrail);
+}
+loopTrail();
+document.addEventListener('mousedown',()=>{cur.querySelector('.cur-svg').style.transform='translate(-50%,-50%) scale(0.7) rotate(22deg)';});
+document.addEventListener('mouseup',()=>{cur.querySelector('.cur-svg').style.transform='translate(-50%,-50%) scale(1) rotate(0deg)';});
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.querySelector('.cur-svg').style.transform='translate(-50%,-50%) scale(1.3)';cur.querySelector('.cur-svg').style.filter='drop-shadow(0 0 6px rgba(168,134,60,.5))';});
+  el.addEventListener('mouseleave',()=>{cur.querySelector('.cur-svg').style.transform='translate(-50%,-50%) scale(1)';cur.querySelector('.cur-svg').style.filter='drop-shadow(0 0 3px rgba(168,134,60,.25))';});
+});
+
+// Progress bar
+window.addEventListener('scroll',()=>{
+  const st=window.scrollY;
+  const dh=document.documentElement.scrollHeight-window.innerHeight;
+  document.getElementById('progress').style.width=(st/dh*100)+'%';
+  const nav=document.getElementById('back-nav');
+  if(st>60){nav.style.boxShadow='0 1px 20px rgba(0,0,0,0.08)';}
+  else{nav.style.boxShadow='none';}
+});
+
+// Scroll reveal
+const ro=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:0.07});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+// Why chain — staggered
+const whyItems=document.querySelectorAll('.why-item');
+const whyObs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*150);}
+  });
+},{threshold:0.2});
+whyItems.forEach(el=>whyObs.observe(el));
+</script>
+</body>
+</html>
