@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doomersion — Case Study · Aman Raj Singh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Cinzel:wght@400;500;600&family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sand:#F5F1E8; --sand-dark:#EDE8DB; --sand-deeper:#E6E0D0;
+  --charcoal:#1A1A1A; --stone:#5A5550; --stone-light:#8C8680;
+  --gold:#A8863C; --gold-mid:#B8964A; --gold-vivid:#C49A40;
+  --gold-bg:rgba(168,134,60,0.09); --gold-border:rgba(168,134,60,0.35);
+  --border:#C8C2B5; --border-dark:#AEA89E;
+  --deep:#0F0F0F; --deep-2:#161410;
+  --red:#8B3A3A; --green:#3A6B4A; --blue:#3A5A8B;
+  --red-bg:rgba(139,58,58,0.07); --green-bg:rgba(58,107,74,0.07); --blue-bg:rgba(58,90,139,0.07);
+  --red-border:rgba(139,58,58,0.3); --green-border:rgba(58,107,74,0.3); --blue-border:rgba(58,90,139,0.3);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--sand);color:var(--charcoal);font-family:'EB Garamond',serif;font-size:18px;line-height:1.8;overflow-x:hidden;cursor:none;}
+
+/* CURSOR */
+#cursor{position:fixed;pointer-events:none;z-index:99999;top:0;left:0;opacity:0;transition:opacity .3s;}
+#cursor.active{opacity:1;}
+.cur-svg{width:32px;height:32px;transform:translate(-50%,-50%);transition:transform .2s ease,filter .2s ease;will-change:transform;filter:drop-shadow(0 0 3px rgba(168,134,60,.25));}
+#cursor-trail{position:fixed;pointer-events:none;z-index:99998;width:5px;height:5px;border-radius:50%;background:var(--gold-vivid);opacity:.3;transform:translate(-50%,-50%);top:0;left:0;transition:left .35s ease,top .35s ease;}
+
+/* PROGRESS */
+#progress{position:fixed;top:0;left:0;height:2px;background:var(--gold-vivid);z-index:300;transition:width .1s linear;width:0%;}
+
+/* BACK NAV */
+#back-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(245,241,232,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:14px 60px;display:flex;align-items:center;justify-content:space-between;}
+.back-link{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);text-decoration:none;display:flex;align-items:center;gap:10px;transition:color .3s;}
+.back-link:hover{color:var(--gold);}
+.back-arrow{font-size:14px;color:var(--gold-vivid);}
+.back-title{font-family:'Cinzel',serif;font-size:9px;letter-spacing:5px;text-transform:uppercase;color:var(--charcoal);}
+.nav-links-cs{display:flex;gap:0;list-style:none;border:1px solid var(--border);}
+.nav-links-cs li a{display:block;font-family:'Cinzel',serif;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:var(--stone);text-decoration:none;padding:8px 13px;border-right:1px solid var(--border);transition:background .25s,color .25s;}
+.nav-links-cs li:last-child a{border-right:none;}
+.nav-links-cs li a:hover{background:var(--sand-dark);color:var(--gold);}
+.nav-pdf-btn{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-vivid);padding:9px 18px;text-decoration:none;border:1px solid var(--gold-border);transition:all .3s;display:flex;align-items:center;gap:8px;}
+.nav-pdf-btn:hover{background:var(--gold-bg);border-color:var(--gold-vivid);}
+.connect-btn{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--sand);background:var(--charcoal);padding:9px 22px;text-decoration:none;border:1px solid var(--charcoal);transition:all .3s;}
+.connect-btn:hover{background:var(--gold-vivid);border-color:var(--gold-vivid);color:var(--deep);}
+
+/* HERO */
+.cs-hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:flex-end;padding:100px 80px 80px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;gap:64px;}
+.cs-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent 10%,var(--gold-vivid) 50%,transparent 90%);}
+.hero-right-num{display:flex;align-items:flex-end;justify-content:flex-end;}
+.hero-bg-num{font-family:'Cormorant Garamond',serif;font-size:clamp(200px,26vw,360px);font-weight:300;color:transparent;-webkit-text-stroke:1px rgba(168,134,60,0.07);line-height:0.9;user-select:none;}
+.cs-eyebrow{font-family:'Cinzel',serif;font-size:8px;letter-spacing:6px;text-transform:uppercase;color:var(--gold-vivid);margin-bottom:28px;display:flex;align-items:center;gap:16px;}
+.cs-eyebrow::before{content:'';width:28px;height:1px;background:var(--gold-vivid);}
+.cs-num{font-family:'Cinzel',serif;font-size:9px;letter-spacing:6px;text-transform:uppercase;color:var(--stone-light);margin-bottom:16px;display:block;}
+.cs-hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(48px,7.5vw,96px);font-weight:300;line-height:1.0;letter-spacing:-1px;color:var(--charcoal);margin-bottom:24px;}
+.cs-hero-title em{font-style:italic;color:var(--stone);display:block;}
+.cs-hero-sub{font-family:'Spectral',serif;font-size:15px;color:var(--stone);max-width:480px;line-height:1.9;margin-bottom:40px;}
+.cs-meta-row{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border);border-left:1px solid var(--border);}
+.cs-meta-cell{padding:16px 22px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.cs-meta-lbl{font-family:'Cinzel',serif;font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--stone-light);display:block;margin-bottom:4px;}
+.cs-meta-val{font-family:'Spectral',serif;font-size:13px;color:var(--charcoal);}
+
+/* BODY */
+.cs-body{max-width:860px;margin:0 auto;padding:80px 60px 0;}
+
+/* SECTION */
+.cs-section{margin-bottom:90px;}
+.cs-section-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:6px;text-transform:uppercase;color:var(--gold-vivid);display:block;margin-bottom:32px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.cs-h2{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,44px);font-weight:300;line-height:1.25;color:var(--charcoal);margin-bottom:24px;}
+.cs-h2 em{font-style:italic;color:var(--stone);}
+.cs-p{font-size:15px;color:var(--stone);line-height:1.95;margin-bottom:16px;}
+.cs-p strong{color:var(--charcoal);font-weight:500;}
+.stone-rule{width:100%;height:1px;background:linear-gradient(90deg,var(--gold-vivid),transparent);opacity:.35;margin:60px 0;}
+
+/* CALLOUT */
+.cs-callout{padding:26px 32px;border-left:2px solid var(--gold-vivid);background:var(--gold-bg);margin:28px 0;}
+.cs-callout .c-lbl{font-family:'Cinzel',serif;font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-vivid);display:block;margin-bottom:8px;}
+.cs-callout p{font-family:'Spectral',serif;font-size:15px;font-style:italic;color:var(--charcoal);line-height:1.8;}
+
+/* TRANSPARENCY */
+.transparency{margin:28px 0;padding:18px 22px;border:1px solid var(--border);background:var(--sand-dark);}
+.transparency p{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:1px;color:var(--stone-light);line-height:1.8;}
+.transparency strong{color:var(--charcoal);font-weight:500;}
+
+/* STAT GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin-top:40px;}
+.stat-card{background:var(--sand);padding:32px 26px;position:relative;overflow:hidden;transition:background .3s;}
+.stat-card:hover{background:var(--sand-dark);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold-vivid);transform:scaleX(0);transition:transform .3s ease;transform-origin:left;}
+.stat-card:hover::before{transform:scaleX(1);}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;color:var(--gold-vivid);line-height:1;margin-bottom:8px;}
+.stat-lbl{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:3px;text-transform:uppercase;color:var(--stone-light);}
+.stat-desc{font-size:13px;color:var(--stone-light);margin-top:6px;line-height:1.5;}
+
+/* CLUSTERS */
+.clusters{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-top:40px;}
+.cluster{background:var(--sand);padding:34px 28px;position:relative;overflow:hidden;transition:background .3s;}
+.cluster:hover{background:var(--sand-dark);}
+.cluster-bar{position:absolute;top:0;left:0;right:0;height:2px;}
+.cluster-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;}
+.cluster-num{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;line-height:1;}
+.cluster-denom{font-family:'Spectral',serif;font-size:16px;color:var(--stone-light);}
+.cluster-kano{font-family:'Cinzel',serif;font-size:7px;letter-spacing:2.5px;text-transform:uppercase;padding:4px 10px;border:1px solid;align-self:flex-start;}
+.cluster-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:500;color:var(--charcoal);margin-bottom:10px;}
+.cluster-pattern{font-size:13px;color:var(--stone);line-height:1.7;margin-bottom:16px;}
+.cluster-quote{font-size:13px;color:var(--stone-light);font-style:italic;padding:14px 18px;border-left:2px solid var(--border);line-height:1.7;}
+
+/* RED/BLUE/GOLD/GREEN cluster colours */
+.cl-red .cluster-num,.cl-red .cluster-denom{color:var(--red);}
+.cl-red .cluster-bar{background:var(--red);}
+.cl-red .cluster-kano{color:var(--red);border-color:var(--red-border);}
+.cl-blue .cluster-num,.cl-blue .cluster-denom{color:var(--blue);}
+.cl-blue .cluster-bar{background:var(--blue);}
+.cl-blue .cluster-kano{color:var(--blue);border-color:var(--blue-border);}
+.cl-gold .cluster-num,.cl-gold .cluster-denom{color:var(--gold-vivid);}
+.cl-gold .cluster-bar{background:var(--gold-vivid);}
+.cl-gold .cluster-kano{color:var(--gold-vivid);border-color:var(--gold-border);}
+
+/* CONTRAST */
+.contrast-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-top:40px;}
+.contrast-col{padding:34px 28px;background:var(--sand);}
+.contrast-col.works{border-top:2px solid var(--green);}
+.contrast-col.breaks{border-top:2px solid var(--red);}
+.contrast-heading{font-family:'Cinzel',serif;font-size:8px;letter-spacing:4px;text-transform:uppercase;margin-bottom:20px;}
+.contrast-heading.works{color:var(--green);}
+.contrast-heading.breaks{color:var(--red);}
+.contrast-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;font-size:14px;color:var(--stone);line-height:1.6;}
+.dot{width:6px;height:6px;border-radius:50%;margin-top:6px;flex-shrink:0;}
+.dot.works{background:var(--green);}
+.dot.breaks{background:var(--red);}
+
+/* PROBLEM BLOCK */
+.problem-block{border:1px solid var(--border);border-left:3px solid var(--red);padding:40px 44px;margin-top:40px;background:var(--sand);}
+.ps-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--red);display:block;margin-bottom:20px;}
+.problem-block p{font-family:'Cormorant Garamond',serif;font-size:clamp(17px,2.2vw,22px);line-height:1.7;color:var(--charcoal);}
+.problem-block p+p{margin-top:18px;font-size:15px;font-family:'EB Garamond',serif;color:var(--stone);}
+
+/* 5 WHYS */
+.whys-chain{margin-top:44px;position:relative;padding-left:34px;}
+.whys-chain::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,var(--gold-vivid),var(--red));}
+.why-item{position:relative;margin-bottom:36px;opacity:0;transform:translateX(-16px);transition:all .5s ease;}
+.why-item.visible{opacity:1;transform:translateX(0);}
+.why-item::before{content:'';position:absolute;left:-26px;top:8px;width:8px;height:8px;border-radius:50%;background:var(--gold-vivid);border:2px solid var(--sand);}
+.why-num{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-vivid);margin-bottom:6px;}
+.why-text{font-size:15px;color:var(--charcoal);line-height:1.7;max-width:660px;}
+
+.root-cause-box{margin-top:44px;padding:36px 44px;border:1px solid var(--gold-border);border-left:3px solid var(--gold-vivid);background:var(--gold-bg);position:relative;}
+.root-cause-box::before{content:'Root Cause';position:absolute;top:16px;right:20px;font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:4px;text-transform:uppercase;color:var(--gold-border);}
+.root-cause-box blockquote{font-family:'Cormorant Garamond',serif;font-size:clamp(17px,2.3vw,24px);font-style:italic;line-height:1.65;color:var(--gold-vivid);}
+
+/* KANO GRID */
+.kano-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:40px;}
+.kano-col{background:var(--sand);padding:32px 26px;}
+.kano-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;margin-bottom:20px;padding-bottom:14px;}
+.kano-lbl.must{color:var(--red);border-bottom:1px solid var(--red-border);}
+.kano-lbl.perf{color:var(--blue);border-bottom:1px solid var(--blue-border);}
+.kano-lbl.deli{color:var(--gold-vivid);border-bottom:1px solid var(--gold-border);}
+.kano-item{font-size:13px;color:var(--stone);padding:12px 0;border-bottom:1px solid var(--border);line-height:1.5;}
+.kano-item:last-child{border-bottom:none;}
+
+/* SOLUTION BLOCKS */
+.solution-block{padding:52px 0;border-top:1px solid var(--border);}
+.solution-block:last-child{border-bottom:1px solid var(--border);}
+.solution-header{display:grid;grid-template-columns:90px 1fr;gap:44px;align-items:start;margin-bottom:32px;}
+.solution-priority-num{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;line-height:0.9;color:transparent;-webkit-text-stroke:1px var(--gold-border);}
+.solution-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.sol-tag{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:2.5px;text-transform:uppercase;padding:4px 12px;border:1px solid;}
+.sol-tag.must{color:var(--red);border-color:var(--red-border);}
+.sol-tag.perf{color:var(--blue);border-color:var(--blue-border);}
+.sol-tag.type{color:var(--gold-vivid);border-color:var(--gold-border);}
+.solution-name{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,2.8vw,28px);font-weight:400;color:var(--charcoal);line-height:1.2;}
+.user-story{background:var(--sand-dark);border-left:2px solid var(--gold-vivid);padding:18px 22px;margin-bottom:28px;font-size:13px;color:var(--stone);line-height:1.75;font-style:italic;}
+.user-story strong{color:var(--gold-vivid);font-style:normal;font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:2px;text-transform:uppercase;}
+.solution-body{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+.solution-desc{font-size:15px;color:var(--stone);line-height:1.9;}
+.solution-aside{display:flex;flex-direction:column;gap:16px;}
+.aside-block{background:var(--sand-dark);padding:20px 22px;border-left:1px solid var(--border);}
+.aside-lbl{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-vivid);margin-bottom:8px;}
+.aside-text{font-size:13px;color:var(--stone-light);line-height:1.7;}
+
+/* ICE TABLE */
+.ice-table{width:100%;border-collapse:collapse;margin-top:40px;}
+.ice-table th{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-vivid);padding:14px 18px;text-align:left;border-bottom:1px solid var(--border);background:var(--sand-dark);}
+.ice-table td{padding:14px 18px;font-size:14px;color:var(--stone);border-bottom:1px solid var(--border);}
+.ice-table tr:hover td{background:var(--sand-dark);color:var(--charcoal);}
+.ice-score{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--gold-vivid);}
+
+/* MATRIX */
+.matrix-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-top:40px;}
+.matrix-cell{background:var(--sand);padding:30px 26px;}
+.matrix-cell.highlight{background:var(--gold-bg);border:1px solid var(--gold-border);}
+.matrix-quadrant{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:3px;text-transform:uppercase;color:var(--stone-light);margin-bottom:14px;}
+.matrix-items{display:flex;flex-direction:column;gap:8px;}
+.matrix-item{font-size:13px;color:var(--charcoal);padding:8px 12px;background:var(--sand-dark);border-left:2px solid var(--gold-vivid);}
+
+/* METRICS */
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-top:40px;}
+.metric-card{background:var(--sand);padding:30px 26px;position:relative;overflow:hidden;transition:background .3s;}
+.metric-card:hover{background:var(--sand-dark);}
+.metric-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(to right,var(--gold-vivid),transparent);}
+.metric-sol{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-vivid);margin-bottom:10px;}
+.metric-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;color:var(--charcoal);margin-bottom:10px;line-height:1.3;}
+.metric-def{font-size:13px;color:var(--stone);line-height:1.65;margin-bottom:14px;}
+.metric-time{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:2px;text-transform:uppercase;color:var(--green);display:flex;align-items:center;gap:8px;}
+.metric-time::before{content:'→';color:var(--stone-light);}
+
+/* RISKS */
+.risks-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-top:40px;}
+.risk-card{background:var(--sand);padding:30px 26px;}
+.risk-label{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:8px;}
+.risk-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;color:var(--charcoal);margin-bottom:10px;}
+.risk-text{font-size:13px;color:var(--stone);line-height:1.65;margin-bottom:18px;}
+.mitigation-label{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:3px;text-transform:uppercase;color:var(--green);margin-bottom:8px;}
+.mitigation-text{font-size:13px;color:var(--stone);line-height:1.65;padding-left:14px;border-left:2px solid var(--green);}
+
+/* VISION NARRATIVE */
+.vision-narrative{border:1px solid var(--border);padding:56px;margin-top:40px;position:relative;background:var(--sand);}
+.vision-narrative::before{content:'"';position:absolute;top:20px;left:36px;font-family:'Cormorant Garamond',serif;font-size:110px;color:rgba(168,134,60,0.07);line-height:1;}
+.vision-text{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,1.8vw,19px);line-height:1.9;color:var(--charcoal);max-width:780px;position:relative;z-index:1;}
+.vision-text p+p{margin-top:22px;}
+.vision-text em{color:var(--gold-vivid);font-style:italic;}
+
+/* ROADMAP */
+.roadmap-items{margin-top:40px;display:flex;flex-direction:column;gap:1px;background:var(--border);}
+.roadmap-item{background:var(--sand);padding:26px 32px;display:grid;grid-template-columns:80px 1fr;gap:28px;align-items:start;transition:background .3s;}
+.roadmap-item:hover{background:var(--sand-dark);}
+.roadmap-phase{font-family:'Cinzel',serif;font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold-vivid);padding-top:4px;line-height:1.8;}
+.roadmap-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;color:var(--charcoal);margin-bottom:6px;}
+.roadmap-desc{font-size:14px;color:var(--stone);line-height:1.65;}
+
+/* PDF DOWNLOAD SECTION */
+.pdf-section{margin:60px 0;padding:44px 48px;border:1px solid var(--border);border-top:2px solid var(--gold-vivid);background:var(--sand-dark);position:relative;}
+.pdf-section-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:5px;text-transform:uppercase;color:var(--gold-vivid);display:block;margin-bottom:14px;}
+.pdf-title{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,3vw,32px);font-weight:300;color:var(--charcoal);margin-bottom:10px;}
+.pdf-sub{font-family:'Spectral',serif;font-size:14px;font-style:italic;color:var(--stone);margin-bottom:28px;line-height:1.7;}
+.pdf-contents{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;}
+.pdf-tag{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--stone);padding:4px 12px;border:1px solid var(--border);}
+.pdf-download-btn{display:inline-flex;align-items:center;gap:12px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--sand);background:var(--charcoal);padding:14px 32px;text-decoration:none;border:1px solid var(--charcoal);transition:all .35s;cursor:none;}
+.pdf-download-btn:hover{background:var(--gold-vivid);border-color:var(--gold-vivid);color:var(--deep);}
+.pdf-download-btn span{font-size:16px;}
+.pdf-note{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:2px;text-transform:uppercase;color:var(--stone-light);margin-top:14px;}
+
+/* SANCTUM */
+.cs-sanctum{padding:80px 0 100px;text-align:center;border-top:1px solid var(--border);}
+.sanctum-vl{width:1px;height:50px;background:linear-gradient(to bottom,transparent,var(--gold-vivid));margin:0 auto 40px;}
+.sanctum-q{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,3.5vw,38px);font-weight:300;line-height:1.4;max-width:720px;margin:0 auto 18px;color:var(--charcoal);}
+.sanctum-a{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:5px;text-transform:uppercase;color:var(--gold-vivid);}
+.sanctum-vl-b{width:1px;height:50px;background:linear-gradient(to bottom,var(--gold-vivid),transparent);margin:40px auto 0;}
+
+/* AUTHOR */
+.author-section{background:var(--sand-dark);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:60px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:28px;}
+.author-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:4px;text-transform:uppercase;color:var(--stone-light);margin-bottom:8px;}
+.author-name{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--charcoal);}
+.author-title{font-size:14px;color:var(--stone-light);font-family:'Spectral',serif;font-style:italic;margin-top:4px;}
+.author-right{display:flex;flex-direction:column;align-items:flex-end;gap:14px;}
+.day-badge{font-family:'Cinzel',serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-vivid);border:1px solid var(--gold-border);padding:6px 18px;}
+.author-links{display:flex;gap:0;border:1px solid var(--border);}
+.author-links a{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--stone);text-decoration:none;padding:9px 20px;border-right:1px solid var(--border);transition:all .3s;}
+.author-links a:last-child{border-right:none;}
+.author-links a:hover{color:var(--gold-vivid);background:var(--gold-bg);}
+
+/* BOTTOM CTA */
+.cs-bottom{background:var(--charcoal);padding:80px 60px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:32px;}
+.cta-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:5px;text-transform:uppercase;color:var(--gold-vivid);display:block;margin-bottom:10px;}
+.cta-text{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,3vw,36px);font-weight:300;color:var(--sand);line-height:1.3;}
+.cta-actions{display:flex;gap:0;flex-shrink:0;}
+.cta-btn{font-family:'Cinzel',serif;font-size:8px;letter-spacing:3px;text-transform:uppercase;padding:13px 26px;text-decoration:none;border:1px solid rgba(245,241,232,.2);color:rgba(245,241,232,.5);transition:all .35s;display:block;}
+.cta-btn:hover{border-color:var(--gold-vivid);color:var(--gold-vivid);}
+.cta-btn.primary{background:rgba(245,241,232,.08);color:rgba(245,241,232,.8);border-right:none;}
+.cta-btn.primary:hover{color:var(--gold-vivid);border-color:var(--gold-vivid);}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .8s ease,transform .8s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+@media(max-width:900px){
+  #back-nav{padding:12px 20px;} .nav-links-cs,.nav-pdf-btn{display:none;}
+  .cs-hero{grid-template-columns:1fr;padding:90px 22px 50px;gap:0;}
+  .hero-right-num{display:none;}
+  .cs-meta-row{grid-template-columns:1fr;}
+  .cs-body{padding:50px 22px 0;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .clusters,.contrast-grid,.metrics-grid,.risks-grid,.kano-grid,.matrix-grid{grid-template-columns:1fr;}
+  .solution-body,.solution-header{grid-template-columns:1fr;gap:20px;}
+  .author-section,.cs-bottom{flex-direction:column;padding:44px 22px;}
+  .author-right{align-items:flex-start;}
+  .cta-actions{flex-direction:column;width:100%;}
+  .cta-btn.primary{border-right:1px solid rgba(245,241,232,.2);border-bottom:none;}
+  .vision-narrative{padding:32px 22px;}
+  .pdf-section{padding:28px 22px;}
+  .pdf-contents{gap:6px;}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor">
+  <svg class="cur-svg" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="16" cy="18" rx="3.2" ry="5.5" stroke="#A8863C" stroke-width="0.9" fill="none"/>
+    <ellipse cx="16" cy="18" rx="3.2" ry="5.5" stroke="#A8863C" stroke-width="0.9" fill="none" transform="rotate(45 16 18)"/>
+    <ellipse cx="16" cy="18" rx="3.2" ry="5.5" stroke="#A8863C" stroke-width="0.9" fill="none" transform="rotate(90 16 18)"/>
+    <ellipse cx="16" cy="18" rx="3.2" ry="5.5" stroke="#A8863C" stroke-width="0.9" fill="none" transform="rotate(135 16 18)"/>
+    <circle cx="16" cy="18" r="1.8" fill="#A8863C" opacity="0.75"/>
+    <line x1="16" y1="12" x2="16" y2="8" stroke="#A8863C" stroke-width="0.7" opacity="0.5"/>
+  </svg>
+</div>
+<div id="cursor-trail"></div>
+
+<!-- PROGRESS -->
+<div id="progress"></div>
+
+<!-- BACK NAV -->
+<div id="back-nav">
+  <a href="aman_raj_singh_portfolio.html" class="back-link">
+    <span class="back-arrow">←</span>
+    <span>Back to Portfolio</span>
+  </a>
+  <ul class="nav-links-cs">
+    <li><a href="#evidence">Evidence</a></li>
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#solutions">Solutions</a></li>
+    <li><a href="#metrics">Metrics</a></li>
+    <li><a href="#vision">Vision</a></li>
+  </ul>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <a href="Doomersion_Detailed_CaseStudy.pdf" download class="nav-pdf-btn">
+      <span>↓</span> Full PDF
+    </a>
+    <a href="mailto:amanrajsingh070304@gmail.com" class="connect-btn">Connect</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="cs-hero">
+  <div class="hero-left">
+    <div class="cs-eyebrow">Case Study 04 · May 2026 · YC W26</div>
+    <h1 class="cs-hero-title">
+      Doomersion
+      <em>The hook that</em>
+      <em>forgot to land.</em>
+    </h1>
+    <p class="cs-hero-sub">A YC-backed language learning app built a genius acquisition hook — learn by doomscrolling. Then forgot to teach users how to use it. This is the activation gap hiding inside a brilliant idea.</p>
+    <div class="cs-meta-row">
+      <div class="cs-meta-cell"><span class="cs-meta-lbl">Company</span><span class="cs-meta-val">Doomersion · Doomlingo Inc.</span></div>
+      <div class="cs-meta-cell"><span class="cs-meta-lbl">Stage</span><span class="cs-meta-val">YC W26 · 4-person team</span></div>
+      <div class="cs-meta-cell"><span class="cs-meta-lbl">Research</span><span class="cs-meta-val">Primary usage + App Store reviews</span></div>
+      <div class="cs-meta-cell"><span class="cs-meta-lbl">Frameworks</span><span class="cs-meta-val">JTBD · KANO · ICE · 5 Whys</span></div>
+    </div>
+  </div>
+  <div class="hero-right-num">
+    <div class="hero-bg-num">04</div>
+  </div>
+</div>
+
+<div class="cs-body">
+
+  <!-- 01 COMPANY CONTEXT -->
+  <div class="cs-section reveal" id="company">
+    <span class="cs-section-lbl">01 · Company Context</span>
+    <h2 class="cs-h2">The bet<br><em>Doomersion made.</em></h2>
+    <p class="cs-p">Doomersion's thesis is simple and sharp: people already spend hours doomscrolling. Instead of fighting that habit, route it into language learning. Short videos in your target language, matched to your level, getting harder as you scroll. The acquisition hook is genuinely differentiated — not another streak-based app, not another flashcard system. A feed.</p>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-num">YC</div><div class="stat-lbl">Winter 2026</div><div class="stat-desc">Y Combinator backed. Launched March 9, 2026 — 10 weeks before this teardown.</div></div>
+      <div class="stat-card"><div class="stat-num">4</div><div class="stat-lbl">Person Team</div><div class="stat-desc">Founder Mostafa Afr, 23, Penn grad. Former professional gamer. San Francisco.</div></div>
+      <div class="stat-card"><div class="stat-num">10K+</div><div class="stat-lbl">Downloads</div><div class="stat-desc">Early traction. No Play Store reviews yet. App Store has 47 ratings, 5 written reviews.</div></div>
+      <div class="stat-card"><div class="stat-num">0→1</div><div class="stat-lbl">Product Stage</div><div class="stat-desc">Must Haves not yet solid. Activation is the core unsolved problem.</div></div>
+    </div>
+    <div style="margin-top:40px;">
+      <p class="cs-p"><strong>JTBD:</strong> Users aren't hiring Doomersion to "learn a language." They're hiring it to make their screen time feel productive — without changing the habit. That's a different job entirely. One leads to Duolingo. The other leads to something nobody has built yet.</p>
+      <p class="cs-p"><strong>Competitive positioning:</strong> Duolingo owns structured learning. YouTube owns long-form immersion. TikTok owns attention. Doomersion is attempting the gap between TikTok and Duolingo — contextual learning inside the scroll. No one has cracked this at scale.</p>
+    </div>
+  </div>
+
+  <div class="stone-rule"></div>
+
+  <!-- 02 EVIDENCE -->
+  <div class="cs-section reveal" id="evidence">
+    <span class="cs-section-lbl">02 · User Research &amp; Evidence</span>
+    <h2 class="cs-h2">What users<br><em>actually experienced.</em></h2>
+    <div class="transparency">
+      <p><strong>Research transparency:</strong> Google Play Store — 0 reviews (10K+ downloads, no written reviews yet). App Store — 47 ratings, 5 written reviews across Feb–Apr 2026. Primary research — 20 minutes of personal app usage, documented in real time. Reddit, Product Hunt, G2 — no relevant results found. Sample is small; this is an early-stage product with limited public data. Primary usage findings and App Store reviews are treated equally as evidence.</p>
+    </div>
+    <p class="cs-p"><strong>Primary user segment identified:</strong> Gen Z college student, 18–25, heavy Instagram/TikTok user, wants their screen time to mean something — without it feeling like studying. Evidence: app name "Doomersion," founder's background in gaming, App Store review language, product positioning.</p>
+
+    <div class="clusters">
+      <div class="cluster cl-red">
+        <div class="cluster-bar"></div>
+        <div class="cluster-top">
+          <div><span class="cluster-num">P1</span><span class="cluster-denom"> bug</span></div>
+          <div class="cluster-kano">Must Have</div>
+        </div>
+        <div class="cluster-title">Performance &amp; Technical Bugs</div>
+        <div class="cluster-pattern">App lag kills the core TikTok-like experience. Arabic transcripts render as one long word. Rewind crashes video. Double-tap to like broken. Captions delayed. The technical foundation undermines the product's core promise.</div>
+        <div class="cluster-quote">"The app is pretty slow and doesn't always load videos in a timely manner, making the point of the app diminished slightly."</div>
+      </div>
+      <div class="cluster cl-red">
+        <div class="cluster-bar"></div>
+        <div class="cluster-top">
+          <div><span class="cluster-num">MH</span><span class="cluster-denom"> core</span></div>
+          <div class="cluster-kano">Must Have</div>
+        </div>
+        <div class="cluster-title">Content Language Mismatch</div>
+        <div class="cluster-pattern">Users who declare Chinese as their target language receive videos dominated by Spanish on-screen text. The entertainment context requires knowing one foreign language; the learning requires knowing another. Both are inaccessible simultaneously.</div>
+        <div class="cluster-quote">"Sometimes you'll get content in a diff language or the subtitles don't correctly work or have weird explanations."</div>
+      </div>
+      <div class="cluster cl-blue">
+        <div class="cluster-bar"></div>
+        <div class="cluster-top">
+          <div><span class="cluster-num">P2</span><span class="cluster-denom"> feed</span></div>
+          <div class="cluster-kano" style="color:var(--blue);border-color:var(--blue-border);">Performance</div>
+        </div>
+        <div class="cluster-title">Content Variety Too Narrow</div>
+        <div class="cluster-pattern">Feed currently shows only skits, comedy, and dance videos. Users want search, algorithm influence, and broader content types. For less common languages the problem is amplified — the feed feels repetitive and boring fast.</div>
+        <div class="cluster-quote">"Right now it seems to only show skits, comedy, and some dance videos and it would be nice if there was either a search bar to find videos I enjoy to influence my algorithm."</div>
+      </div>
+      <div class="cluster cl-gold">
+        <div class="cluster-bar"></div>
+        <div class="cluster-top">
+          <div><span class="cluster-num">MH</span><span class="cluster-denom"> ux</span></div>
+          <div class="cluster-kano">Must Have</div>
+        </div>
+        <div class="cluster-title">Broken Onboarding &amp; Lost Users</div>
+        <div class="cluster-pattern">No guidance on how the core loop works. Users see 4 videos before a signup wall with no understanding of the product's mechanism. The clickable word below the video has no visible contextual bridge to the video. Users feel lost.</div>
+        <div class="cluster-quote">Personal research: "I did not get what it is or what and how to use which made me think of uninstalling it."</div>
+      </div>
+    </div>
+
+    <div class="contrast-grid">
+      <div class="contrast-col works">
+        <div class="contrast-heading works">What works</div>
+        <div class="contrast-item"><div class="dot works"></div>Acquisition hook — "learn by doomscrolling" is genuinely differentiated positioning</div>
+        <div class="contrast-item"><div class="dot works"></div>Word tap feature — when discovered, clicking a word and seeing breakdown works well</div>
+        <div class="contrast-item"><div class="dot works"></div>Quiz feature — word quizzes are appreciated by users who reach them</div>
+        <div class="contrast-item"><div class="dot works"></div>Core concept — power users report 3-hour sessions vs Duolingo's 5-minute average</div>
+      </div>
+      <div class="contrast-col breaks">
+        <div class="contrast-heading breaks">What doesn't</div>
+        <div class="contrast-item"><div class="dot breaks"></div>Activation — users don't understand the core loop without guidance</div>
+        <div class="contrast-item"><div class="dot breaks"></div>Content matching — wrong language videos shown to declared target learners</div>
+        <div class="contrast-item"><div class="dot breaks"></div>AI feature — 3 consecutive errors in personal testing; no evidence it works reliably</div>
+        <div class="contrast-item"><div class="dot breaks"></div>Performance — lag on a short-form video app is fatal to the core experience</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stone-rule"></div>
+
+  <!-- 03 PROBLEM -->
+  <div class="cs-section reveal" id="problem">
+    <span class="cs-section-lbl">03 · Problem Definition</span>
+    <h2 class="cs-h2">One sentence<br><em>explains the churn.</em></h2>
+    <div class="problem-block">
+      <div class="ps-label">Synthesised Problem Statement</div>
+      <p>A Gen Z user, tired of mindless doomscrolling on Instagram or TikTok, hired Doomersion to make their screen time feel productive — learning a language without changing the habit. Instead they encountered a broken first experience: no guidance on how the app works, videos with content in unrelated languages, lag that kills the feed, and a UI that demands too much cognitive effort to follow.</p>
+      <p>This costs Doomersion the one thing a 4-person YC startup cannot afford to lose — Day 1 to Day 7 retention — leaving a brilliant acquisition hook with no activation to back it up.</p>
+    </div>
+    <div class="whys-chain" style="margin-top:56px;">
+      <div class="why-item"><div class="why-num">Why 1</div><div class="why-text">Users churn before understanding the product's value.</div></div>
+      <div class="why-item"><div class="why-num">Why 2</div><div class="why-text">Because the first experience is confusing — lag, no onboarding guidance, and videos in unrelated languages make the core loop invisible.</div></div>
+      <div class="why-item"><div class="why-num">Why 3</div><div class="why-text">Because the feed serves content that doesn't match the user's declared target language, breaking context before learning can begin.</div></div>
+      <div class="why-item"><div class="why-num">Why 4</div><div class="why-text">Because the content curation algorithm pulls videos based on the target language word appearing somewhere in the video — not based on whether the video itself is in or about that language.</div></div>
+      <div class="why-item"><div class="why-num">Why 5</div><div class="why-text">Because the app has no backend audio processing to understand what language is actually being spoken — it relies on surface-level tagging. Proactive audio segmentation and contextual subtitle generation were not prioritised in the 0→1 build.</div></div>
+    </div>
+    <div class="root-cause-box reveal">
+      <blockquote>"Doomersion's algorithm places words in context but not videos in context. It finds the right word but puts it inside the wrong world — leaving the user linguistically lost before the learning even starts."</blockquote>
+    </div>
+  </div>
+
+  <div class="stone-rule"></div>
+
+  <!-- 04 KANO -->
+  <div class="cs-section reveal" id="prioritisation">
+    <span class="cs-section-lbl">04 · KANO Prioritisation</span>
+    <h2 class="cs-h2">What to fix first<br><em>and why.</em></h2>
+    <p class="cs-p">Doomersion is a 10-week old product with a 4-person team. KANO principle: fix all Must Haves before any Performance feature. No Delighters until the foundation is solid.</p>
+    <div class="kano-grid">
+      <div class="kano-col"><div class="kano-lbl must">Must Have — Fix First</div><div class="kano-item">Feed Language Intelligence — wrong language content kills trust before learning starts</div><div class="kano-item">Progressive Onboarding — without guidance activation fails entirely</div><div class="kano-item">Context-Aware AI — broken AI destroys the second core promise</div></div>
+      <div class="kano-col"><div class="kano-lbl perf">Performance — Fix After</div><div class="kano-item">Lag &amp; Video Quality — users compare to TikTok; lag is fatal but not the first reason they leave</div><div class="kano-item">Feed Personalisation — builds long-term habit but requires Must Haves working first</div></div>
+      <div class="kano-col"><div class="kano-lbl deli">Delighters — Later</div><div class="kano-item">Social features — cohort learning, leaderboards</div><div class="kano-item">Corporate-standard certifications — validated learning credentials</div><div class="kano-item">Creator tools — let native speakers contribute content</div></div>
+    </div>
+  </div>
+
+  <div class="stone-rule"></div>
+
+  <!-- 05 SOLUTIONS -->
+  <div class="cs-section reveal" id="solutions">
+    <span class="cs-section-lbl">05 · Solution Framework</span>
+    <h2 class="cs-h2">Five interventions,<br><em>one direction.</em></h2>
+
+    <div class="solution-block">
+      <div class="solution-header"><div class="solution-priority-num">1</div><div><div class="solution-tags"><span class="sol-tag must">Must Have</span><span class="sol-tag type">Core Algorithm</span></div><div class="solution-name">Feed Language Intelligence</div></div></div>
+      <div class="user-story"><strong>User Story:</strong> As a college student who spends hours on Instagram Reels, I want to absorb a new language through videos of real people from that culture, so that my screen time feels productive without feeling like structured study.</div>
+      <div class="solution-body">
+        <div class="solution-desc">Backend AI processes every video before it reaches the feed — detecting spoken language through audio analysis and visual cues. Only videos matching the user's declared target language enter the feed. For matched videos, real-time sentence-level subtitles appear below in the target language. Tapping any sentence pauses the video and shows word-by-word translation with context.</div>
+        <div class="solution-aside">
+          <div class="aside-block"><div class="aside-lbl">Constraint</div><div class="aside-text">Backend processing increases feed load latency. Requires powerful compute infrastructure — paid cloud processing and model training costs significant for a 4-person team.</div></div>
+          <div class="aside-block"><div class="aside-lbl">Trade-off</div><div class="aside-text">Choosing server-side language filtering over on-device processing — more accurate but adds latency. Speed is sacrificed for reliability at this stage.</div></div>
+          <div class="aside-block"><div class="aside-lbl">A/B Test</div><div class="aside-text">50% new users get current feed vs 50% get language-filtered feed. Measure: Day 1 activation rate. Success: 20%+ improvement in filtered group after 500 users per group.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="solution-block">
+      <div class="solution-header"><div class="solution-priority-num">2</div><div><div class="solution-tags"><span class="sol-tag must">Must Have</span><span class="sol-tag type">Quick Win</span></div><div class="solution-name">Progressive Onboarding</div></div></div>
+      <div class="user-story"><strong>User Story:</strong> As a college student used to the effortless smoothness of Instagram Reels, I want to start learning a new language without any setup confusion, so that my free time feels enhanced — not spent figuring out a new app.</div>
+      <div class="solution-body">
+        <div class="solution-desc">After initial questions, user lands on feed with a guided first experience. Nudge 1: tap the subtitle word. Nudge 2: swipe up/down. After 2–3 videos: short Gen Z-style prompt to try the AI feature. After AI used: 2 more free scrolls then signup wall. Only these steps — no clutter, no information overload. Main feed visible in background throughout so the user experiences the product while learning it.</div>
+        <div class="solution-aside">
+          <div class="aside-block"><div class="aside-lbl">Constraint</div><div class="aside-text">Risk is purely in nudge design — intrusive nudges backfire. Requires careful UX testing to find the right weight: visible enough to guide, light enough to not annoy.</div></div>
+          <div class="aside-block"><div class="aside-lbl">Trade-off</div><div class="aside-text">Choosing linear guided onboarding over interactive tutorial — fewer steps means less drop-off, even though some features remain undiscovered initially.</div></div>
+          <div class="aside-block"><div class="aside-lbl">A/B Test</div><div class="aside-text">50% get current experience vs 50% get guided onboarding. Measure: Day 3 retention rate. Success: 15%+ higher return rate in guided group. Fastest test to conclude — 72 hours per user.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="solution-block">
+      <div class="solution-header"><div class="solution-priority-num">3</div><div><div class="solution-tags"><span class="sol-tag must">Must Have</span><span class="sol-tag type">AI Feature</span></div><div class="solution-name">Context-Aware AI</div></div></div>
+      <div class="user-story"><strong>User Story:</strong> As a college student used to asking doubts fast using LLMs like ChatGPT, I want AI language support seamlessly inside the app, so that I don't have to switch to ChatGPT and break my attention.</div>
+      <div class="solution-body">
+        <div class="solution-desc">AI tracks which part of the app it was opened from and understands user intent from context. Instead of generic errors, it delivers short constructive redirects — tells the user specifically what to try instead of hitting a dead end. When the AI genuinely can't process a request, it responds with a specific, useful suggestion rather than "Sorry, I had trouble responding."</div>
+        <div class="solution-aside">
+          <div class="aside-block"><div class="aside-lbl">Constraint</div><div class="aside-text">Every AI call needs to carry session context — current screen, user intent, recent actions — increasing token usage per request significantly.</div></div>
+          <div class="aside-block"><div class="aside-lbl">Trade-off</div><div class="aside-text">Choosing context-aware short responses over a full conversational tutor — reliability matters more than depth. A simple AI that always responds beats a smart AI that errors out.</div></div>
+          <div class="aside-block"><div class="aside-lbl">A/B Test</div><div class="aside-text">50% get current AI vs 50% get context-aware AI. Measure: AI feature engagement rate per session. Secondary: session length. Success: 25%+ higher AI usage in new group.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="solution-block">
+      <div class="solution-header"><div class="solution-priority-num">4</div><div><div class="solution-tags"><span class="sol-tag perf">Performance</span><span class="sol-tag type">Infrastructure</span></div><div class="solution-name">Performance &amp; Lag Optimisation</div></div></div>
+      <div class="user-story"><strong>User Story:</strong> As a college student used to instant-loading feeds, I want a smooth experience without waiting or frustration, so that my learning time feels effortless and I don't switch back to Instagram or TikTok.</div>
+      <div class="solution-body">
+        <div class="solution-desc">Declutter feed UI to reduce rendering load. Implement adaptive bitrate streaming — video quality adjusts dynamically to available bandwidth so users on 3G don't experience lag. Apply AI-assisted video smoothing capped at a defined pixel threshold, preserving original content integrity while improving perceived quality on lower-end devices.</div>
+        <div class="solution-aside">
+          <div class="aside-block"><div class="aside-lbl">Constraint</div><div class="aside-text">AI video smoothing at scale multiplies compute costs significantly across concurrent users. Adaptive bitrate streaming is the more cost-effective alternative at this team size.</div></div>
+          <div class="aside-block"><div class="aside-lbl">Trade-off</div><div class="aside-text">Choosing adaptive bitrate streaming over AI smoothing — proven technology, lower cost, doesn't multiply per-user compute costs at scale.</div></div>
+          <div class="aside-block"><div class="aside-lbl">A/B Test</div><div class="aside-text">50% current delivery vs 50% optimised adaptive bitrate. Measure: Day 1 churn rate. Segment specifically by lower-end Android devices and 3G connections for sharpest signal.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="solution-block">
+      <div class="solution-header"><div class="solution-priority-num">5</div><div><div class="solution-tags"><span class="sol-tag perf">Performance</span><span class="sol-tag type">Long-Term Retention</span></div><div class="solution-name">Personalised Feed Algorithm</div></div></div>
+      <div class="user-story"><strong>User Story:</strong> As a college student with a highly personalised Instagram and YouTube feed, I want my learning feed to understand my viewing patterns and show varied content, so that the app feels intelligent and relevant — not generic and outdated.</div>
+      <div class="solution-body">
+        <div class="solution-desc">Dynamic recommendation engine tracks watch time per video in real time. If a user spends more time on a content type — identified through subtitle keywords and video hashtags — push similar content. If engagement drops across 3–4 consecutive videos, reset to general feed and recalculate. Force 7–8 general videos periodically even when engagement is strong, to prevent filter bubble fatigue. Learns within session first, then across sessions.</div>
+        <div class="solution-aside">
+          <div class="aside-block"><div class="aside-lbl">Constraint</div><div class="aside-text">Algorithm development time is significant. Edge cases are complex — passive scrollers, mixed intent users, cold start problem for new users with no watch history.</div></div>
+          <div class="aside-block"><div class="aside-lbl">Trade-off</div><div class="aside-text">Choosing watch-time as primary signal over multi-signal algorithm — simplest reliable signal available. Hashtags and subtitles add complexity a small team can't maintain cleanly in v1.</div></div>
+          <div class="aside-block"><div class="aside-lbl">A/B Test</div><div class="aside-text">50% static feed vs 50% dynamic watch-time algorithm. Measure: Day 7 and Day 30 retention. Longest test window — 30 days minimum. Run in parallel with faster tests.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stone-rule"></div>
+
+  <!-- 06 ICE -->
+  <div class="cs-section reveal" id="ice">
+    <span class="cs-section-lbl">06 · ICE Scoring &amp; Prioritisation Matrix</span>
+    <h2 class="cs-h2">Scoring the<br><em>build order.</em></h2>
+    <table class="ice-table">
+      <thead><tr><th>Solution</th><th>KANO</th><th>Impact</th><th>Confidence</th><th>Ease</th><th>ICE Score</th></tr></thead>
+      <tbody>
+        <tr><td>P1 — Performance &amp; Lag</td><td>Performance</td><td>8</td><td>8</td><td>7</td><td><span class="ice-score">448</span></td></tr>
+        <tr><td>MH1 — Feed Language</td><td>Must Have</td><td>8</td><td>7</td><td>5</td><td><span class="ice-score">280</span></td></tr>
+        <tr><td>MH2 — Onboarding</td><td>Must Have</td><td>7</td><td>3</td><td>10</td><td><span class="ice-score">210</span></td></tr>
+        <tr><td>MH3 — Context AI</td><td>Must Have</td><td>5</td><td>4</td><td>7</td><td><span class="ice-score">140</span></td></tr>
+        <tr><td>P2 — Feed Algorithm</td><td>Performance</td><td>6</td><td>4</td><td>3</td><td><span class="ice-score">72</span></td></tr>
+      </tbody>
+    </table>
+    <p class="cs-p" style="margin-top:28px;"><strong>Key insight:</strong> P1 scores highest on ICE but is a Performance feature. KANO overrides — all Must Haves ship first. MH2 onboarding is the single highest priority action: it's both a Must Have AND the easiest to build (Ease: 10). A 4-person team should ship this in days, not weeks.</p>
+    <div class="matrix-grid">
+      <div class="matrix-cell highlight"><div class="matrix-quadrant">Do First — High Impact, Low Effort</div><div class="matrix-items"><div class="matrix-item">MH2 — Progressive Onboarding</div><div class="matrix-item">P1 — Performance &amp; Lag</div></div></div>
+      <div class="matrix-cell"><div class="matrix-quadrant">Plan — High Impact, High Effort</div><div class="matrix-items"><div class="matrix-item">MH1 — Feed Language Intelligence</div><div class="matrix-item">P2 — Personalised Feed Algorithm</div></div></div>
+      <div class="matrix-cell"><div class="matrix-quadrant">Fill In — Low Impact, Low Effort</div><div class="matrix-items"><div class="matrix-item">MH3 — Context-Aware AI</div></div></div>
+      <div class="matrix-cell"><div class="matrix-quadrant">Avoid — Low Impact, High Effort</div><div class="matrix-items" style="font-size:13px;color:var(--stone-light);">Nothing — a focused solution set.</div></div>
+    </div>
+  </div>
+
+  <div class="stone-rule"></div>
+
+  <!-- 07 METRICS -->
+  <div class="cs-section reveal" id="metrics">
+    <span class="cs-section-lbl">07 · Success Metrics</span>
+    <h2 class="cs-h2">How you know<br><em>it's working.</em></h2>
+    <div class="metrics-grid">
+      <div class="metric-card"><div class="metric-sol">MH1 — Feed Language</div><div class="metric-name">Day 1 Activation Rate</div><div class="metric-def">% of new users who complete their first full subtitle interaction — tap a word and see its translation. This proves the core learning loop was both discovered and used.</div><div class="metric-time">Measured within first 24 hours of install</div></div>
+      <div class="metric-card"><div class="metric-sol">MH2 — Onboarding</div><div class="metric-name">Day 1 to Day 3 Retention Rate</div><div class="metric-def">% of users who return and open the app within 72 hours of first install. Onboarding directly determines whether a user understands the product enough to come back.</div><div class="metric-time">Measured over first 72 hours post install</div></div>
+      <div class="metric-card"><div class="metric-sol">MH3 — Context AI</div><div class="metric-name">AI Feature Engagement Rate</div><div class="metric-def">% of active users who use the AI feature at least once per session. Secondary metric: session length — AI usage should extend sessions, not frustrate users into closing.</div><div class="metric-time">Measured weekly after feature ships</div></div>
+      <div class="metric-card"><div class="metric-sol">P1 — Performance</div><div class="metric-name">Day 1 Churn Rate</div><div class="metric-def">% of users who don't return within 24 hours of first session. Lag is the primary technical reason for immediate uninstall on a short-form video app where TikTok is the comparison point.</div><div class="metric-time">Measured within first 24 hours of install</div></div>
+      <div class="metric-card" style="grid-column:1/-1;"><div class="metric-sol">P2 — Feed Algorithm</div><div class="metric-name">Day 7 and Day 30 Retention Rate</div><div class="metric-def">% of users still active one week and one month after install. Personalisation is the core habit-building mechanism — without it users exhaust the novelty of the concept and leave. Day 7 is the leading indicator; Day 30 confirms habit formation.</div><div class="metric-time">Day 7 at end of first week · Day 30 at end of first month</div></div>
+    </div>
+  </div>
+
+  <div class="stone-rule"></div>
+
+  <!-- 08 RISKS -->
+  <div class="cs-section reveal" id="risks">
+    <span class="cs-section-lbl">08 · Risks &amp; Mitigations</span>
+    <h2 class="cs-h2">What could<br><em>go wrong.</em></h2>
+    <div class="risks-grid">
+      <div class="risk-card"><div class="risk-label">MH1</div><div class="risk-name">Feed Load Latency</div><div class="risk-text">Backend processing of every video increases the time before content reaches the user's feed — on a short-form video app, any perceptible load time breaks the scroll experience.</div><div class="mitigation-label">Mitigation</div><div class="mitigation-text">Pre-filter content on first user profiling to build a cached content library. Give the real-time system a head start so the user never feels the processing delay.</div></div>
+      <div class="risk-card"><div class="risk-label">MH2</div><div class="risk-name">Onboarding Drop-off</div><div class="risk-text">Too many steps before the main screen causes the user to feel onboarding is the product — they came to scroll, not to be taught how to scroll.</div><div class="mitigation-label">Mitigation</div><div class="mitigation-text">Show the main feed in the background between nudge steps. User experiences the product while learning it — service delivery and education happen simultaneously.</div></div>
+      <div class="risk-card"><div class="risk-label">MH3</div><div class="risk-name">Token Cost Multiplication</div><div class="risk-text">Context-aware AI requires passing session state with every API call — current screen, user intent, recent actions — significantly increasing token usage and backend cost per user.</div><div class="mitigation-label">Mitigation</div><div class="mitigation-text">Limit AI access to specific touchpoints in the app. Shorter context window per call keeps costs controlled without sacrificing the contextual intelligence.</div></div>
+      <div class="risk-card"><div class="risk-label">P1</div><div class="risk-name">Content Integrity Compromise</div><div class="risk-text">AI video smoothing risks altering the original video content — over-smoothed footage loses authenticity, which matters particularly for cultural and language immersion content.</div><div class="mitigation-label">Mitigation</div><div class="mitigation-text">Backend caps smoothing at a defined pixel threshold. Preserves original content integrity while improving perceived quality. Never apply above the cap regardless of device quality.</div></div>
+      <div class="risk-card" style="grid-column:1/-1;"><div class="risk-label">P2</div><div class="risk-name">Filter Bubble Fatigue</div><div class="risk-text">Watch-time algorithm creates a content echo chamber — users get locked into one content type even when engagement is strong, eventually exhausting that category and churning faster than a varied feed would cause.</div><div class="mitigation-label">Mitigation</div><div class="mitigation-text">Force 7–8 general videos into the feed periodically even when the engagement trend is positive. This resets and realigns user interest, preventing the filter bubble from forming while maintaining personalisation momentum.</div></div>
+    </div>
+  </div>
+
+  <div class="stone-rule"></div>
+
+  <!-- 09 VISION -->
+  <div class="cs-section reveal" id="vision">
+    <span class="cs-section-lbl">09 · Vision &amp; Roadmap</span>
+    <h2 class="cs-h2">Where Doomersion<br><em>could go.</em></h2>
+    <div class="roadmap-items">
+      <div class="roadmap-item"><div class="roadmap-phase">Now<br>0–3 mo</div><div><div class="roadmap-title">Fix the Foundation</div><div class="roadmap-desc">Ship all three Must Haves. Progressive onboarding first — days to build, immediate retention impact. Language feed filtering and context-aware AI in parallel. Performance optimisation running alongside.</div></div></div>
+      <div class="roadmap-item"><div class="roadmap-phase">Next<br>3–6 mo</div><div><div class="roadmap-title">Build the Habit Loop</div><div class="roadmap-desc">Ship the personalised feed algorithm. Introduce streak mechanics. Add vocabulary tracking across sessions. Build the repeat-usage trigger that turns curious downloaders into daily learners.</div></div></div>
+      <div class="roadmap-item"><div class="roadmap-phase">Later<br>6–12 mo</div><div><div class="roadmap-title">Build the Ecosystem</div><div class="roadmap-desc">Validated learning credentials — corporate-standard certificates that prove what the user learned. Doomersion becomes not just a learning app but a credential platform. Screen time converted to career proof.</div></div></div>
+    </div>
+    <div class="vision-narrative" style="margin-top:52px;">
+      <div class="vision-text">
+        <p>Alex is 21. Final year engineering in Pune. His Instagram feed knows him better than his friends do — travel reels, tech memes, Japanese street food videos he can't stop watching.</p>
+        <p>One night he sees a post about Doomersion. <em>"Learn Japanese by doomscrolling."</em> He downloads it at 11pm thinking he'll try it for five minutes.</p>
+        <p>The app asks him three questions. Target language. Level. Done. The feed opens — and a small nudge appears at the bottom. Not a tutorial. Just one instruction: <em>"Tap any word below the video."</em> He taps. The video pauses. The word breaks apart — kanji, reading, meaning. He didn't feel like he studied. He felt like he caught something.</p>
+        <p>Two videos later another nudge. "Swipe left to ask about what you just watched." He swipes. The AI asks him — "Did you catch what she said in that scene?" He types back. It responds in two lines. Specific. Fast. He didn't open ChatGPT. He didn't break his scroll.</p>
+        <p>Three weeks later Alex is 40 videos deep into his Japanese streak. His feed has figured him out — street food videos, anime reactions, Tokyo vlogs. All Japanese. All at his level. Getting harder without him noticing.</p>
+        <p>Then something new appears. A badge. <em>"Conversational Beginner — Doomersion Verified."</em> A short test. 10 videos. 10 word questions. He passes. He puts it on his LinkedIn.</p>
+        <p>His friend messages him: <em>"bro what is this."</em> He sends the download link.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF DOWNLOAD SECTION -->
+  <div class="pdf-section reveal">
+    <span class="pdf-section-lbl">Full Detailed Case Study</span>
+    <p class="pdf-title">Download the complete analysis</p>
+    <p class="pdf-sub">The full PDF goes deeper — includes extended research notes, additional JTBD mapping, wireframe descriptions for each solution, detailed A/B test design, and the complete competitive landscape analysis.</p>
+    <div class="pdf-contents">
+      <span class="pdf-tag">Extended Research Notes</span>
+      <span class="pdf-tag">JTBD Mapping</span>
+      <span class="pdf-tag">Solution Wireframes</span>
+      <span class="pdf-tag">A/B Test Design</span>
+      <span class="pdf-tag">Competitive Landscape</span>
+      <span class="pdf-tag">Full ICE Breakdown</span>
+    </div>
+    <a href="Doomersion_Detailed_CaseStudy.pdf" download class="pdf-download-btn">
+      <span>↓</span> Download Full Case Study PDF
+    </a>
+    <p class="pdf-note">PDF · Doomersion Detailed Case Study · Aman Raj Singh · May 2026</p>
+  </div>
+
+  <!-- SANCTUM -->
+  <div class="cs-sanctum reveal">
+    <div class="sanctum-vl"></div>
+    <p class="sanctum-q">"A brilliant acquisition hook with no activation is not a product — it is a door that opens into a wall. The job is not to find better hooks. The job is to make the room worth walking into."</p>
+    <span class="sanctum-a">Core Insight — Aman Raj Singh</span>
+    <div class="sanctum-vl-b"></div>
+  </div>
+
+</div><!-- /cs-body -->
+
+<!-- AUTHOR -->
+<div class="author-section reveal">
+  <div>
+    <div class="author-label">Written by</div>
+    <div class="author-name">Aman Raj Singh</div>
+    <div class="author-title">Day 25 · PM Transition · Building in Public · Case Study 04 of ongoing series</div>
+  </div>
+  <div class="author-right">
+    <div class="day-badge">Day 25 of 31</div>
+    <div class="author-links">
+      <a href="https://www.linkedin.com/in/aman-raj-singh-688039229/" target="_blank">LinkedIn</a>
+      <a href="aman_raj_singh_portfolio.html">Portfolio</a>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM CTA -->
+<div class="cs-bottom">
+  <div>
+    <span class="cta-lbl">Continue the journey</span>
+    <p class="cta-text">Return to portfolio<br>or connect directly.</p>
+  </div>
+  <div class="cta-actions">
+    <a href="aman_raj_singh_portfolio.html" class="cta-btn primary">← Back to Portfolio</a>
+    <a href="mailto:amanrajsingh070304@gmail.com" class="cta-btn">Connect with Aman →</a>
+  </div>
+</div>
+
+<script>
+// Cursor
+const cur=document.getElementById('cursor');
+const trail=document.getElementById('cursor-trail');
+let mx=0,my=0,tx=0,ty=0,moved=false;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  if(!moved){cur.classList.add('active');moved=true;}
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+});
+function loopTrail(){tx+=(mx-tx)*.1;ty+=(my-ty)*.1;trail.style.left=tx+'px';trail.style.top=ty+'px';requestAnimationFrame(loopTrail);}
+loopTrail();
+document.addEventListener('mousedown',()=>{cur.querySelector('.cur-svg').style.transform='translate(-50%,-50%) scale(0.7) rotate(22deg)';});
+document.addEventListener('mouseup',()=>{cur.querySelector('.cur-svg').style.transform='translate(-50%,-50%) scale(1) rotate(0deg)';});
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.querySelector('.cur-svg').style.transform='translate(-50%,-50%) scale(1.3)';cur.querySelector('.cur-svg').style.filter='drop-shadow(0 0 6px rgba(168,134,60,.5))';});
+  el.addEventListener('mouseleave',()=>{cur.querySelector('.cur-svg').style.transform='translate(-50%,-50%) scale(1)';cur.querySelector('.cur-svg').style.filter='drop-shadow(0 0 3px rgba(168,134,60,.25))';});
+});
+
+// Progress
+window.addEventListener('scroll',()=>{
+  const st=window.scrollY;
+  const dh=document.documentElement.scrollHeight-window.innerHeight;
+  document.getElementById('progress').style.width=(st/dh*100)+'%';
+});
+
+// Reveal
+const ro=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*60);});
+},{threshold:0.07});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+// Why chain staggered
+const wobs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*160);});
+},{threshold:0.15});
+document.querySelectorAll('.why-item').forEach(el=>wobs.observe(el));
+</script>
+</body>
+</html>
